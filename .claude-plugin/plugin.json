@@ -1,0 +1,30 @@
+{
+  "name": "maptiler",
+  "version": "1.0.0",
+  "description": "Expert coding skill for the full MapTiler platform — Cloud REST APIs, MapTiler SDK JS (built on MapLibre GL JS), MapTiler GeoSplats SDK, web framework integrations, native iOS / Android / Flutter / React Native SDKs, on-premise Server & Engine, and vector tile schemas (Planet v4, Buildings, Contours, Outdoor, Ocean, Landcover, Cadastre).",
+  "author": {
+    "name": "MapTiler",
+    "url": "https://www.maptiler.com/"
+  },
+  "homepage": "https://docs.maptiler.com/",
+  "license": "MIT",
+  "keywords": [
+    "maptiler",
+    "maplibre",
+    "maps",
+    "geocoding",
+    "geospatial",
+    "geosplats",
+    "vector-tiles",
+    "static-maps",
+    "weather",
+    "elevation",
+    "react",
+    "vue",
+    "svelte",
+    "angular",
+    "ios",
+    "android",
+    "flutter"
+  ]
+}
