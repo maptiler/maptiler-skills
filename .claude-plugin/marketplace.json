@@ -1,5 +1,5 @@
 {
-  "name": "agent-skills",
+  "name": "maptiler-skills",
   "owner": { "name": "maptiler" },
   "plugins": [
     {
