@@ -35,8 +35,8 @@ What triggers a skill is the same in every tool: the description field in the `S
 Add the marketplace, install the plugin, then reload so the skill registers:
 
 ```bash
-/plugin marketplace add maptiler/agent-skills
-/plugin install maptiler@agent-skills
+/plugin marketplace add maptiler/maptiler-skills
+/plugin install maptiler@maptiler-skills
 /reload-plugins
 ```
 
@@ -49,13 +49,13 @@ Install straight from the repository with a single command:
 #### Windows (PowerShell)
 
 ```powershell
-git clone https://github.com/maptiler/agent-skills.git; mkdir "$HOME\.gemini\skills\maptiler" -Force; cp -Recurse agent-skills\skills\* "$HOME\.gemini\skills\maptiler\"; rm -Recurse -Force agent-skills
+git clone https://github.com/maptiler/maptiler-skills.git; mkdir "$HOME\.gemini\skills\maptiler" -Force; cp -Recurse maptiler-skills\skills\* "$HOME\.gemini\skills\maptiler\"; rm -Recurse -Force maptiler-skills
 ```
 
 #### Linux & macOS (bash)
 
 ```bash
-git clone https://github.com/maptiler/agent-skills.git && mkdir -p ~/.gemini/skills/maptiler && cp -r agent-skills/skills/* ~/.gemini/skills/maptiler/ && rm -rf agent-skills
+git clone https://github.com/maptiler/maptiler-skills.git && mkdir -p ~/.gemini/skills/maptiler && cp -r maptiler-skills/skills/* ~/.gemini/skills/maptiler/ && rm -rf maptiler-skills
 ```
 
 Or copy it in manually:
