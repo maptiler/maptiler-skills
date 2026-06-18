@@ -6,9 +6,9 @@
       "name": "maptiler",
       "source": {
         "source": "url",
-        "url": "https://github.com/maptiler/agent-skills.git"
+        "url": "https://github.com/maptiler/maptiler-skills.git"
       },
-      "description": "MapTiler expert skill",
+      "description": "MapTiler expert skills",
       "version": "1.0.0"
     }
   ]
