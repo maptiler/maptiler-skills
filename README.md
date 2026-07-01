@@ -49,7 +49,7 @@ It helps to keep three layers separate, because the install steps below differ b
 2.  **The plugin** is a Claude Code–specific wrapper for distributing the skill through a marketplace. Other tools don't use it.
 3.  **The agent** (Claude Code, Gemini CLI, Cursor, Windsurf…) is the tool that loads the skill from its own skills directory.
 
-So there are two ways to install: through the Claude Code plugin marketplace (Claude Code only), or by copying the skill folder into any agent's skills directory (works everywhere).
+So there are three ways to install: with the [Skills CLI](https://github.com/vercel-labs/skills) (`npx skills add`, auto-detects your agent and works across dozens of them), through the Claude Code plugin marketplace (Claude Code only), or by copying the skill folder into any agent's skills directory (works everywhere).
 
 What triggers a skill is the same in every tool: the description field in the `SKILL.md` frontmatter. The agent matches your request against that description to decide whether to activate the skill, so installation alone isn't enough — the skill also has to be registered and triggered.
 
@@ -57,6 +57,13 @@ What triggers a skill is the same in every tool: the description field in the `S
 
 ## 📦 Installation
 
+### Universal — via Skills CLI
+
+Works with Claude Code, Gemini CLI, Cursor, Windsurf, and dozens of other agents. The [Skills CLI](https://github.com/vercel-labs/skills) auto-detects which agents you have installed and sets the skill up for each one, so you don't need to know the target directory yourself:
+
+```bash
+npx skills add maptiler/maptiler-skills
+```
 ### Claude Code — as a plugin
 
 Add the marketplace, install the plugin, then reload so the skill registers:
@@ -114,7 +121,7 @@ mkdir -p .windsurf/skills && cp -r skills/maptiler .windsurf/skills/
 
 ### Other agents
 
-Any tool that supports the Agent Skills standard can use this skill. Place the `maptiler` folder (containing `SKILL.md` and `references/`) wherever that agent looks for skill definitions.
+Any tool that supports the Agent Skills standard can use this skill. The [Skills CLI](https://github.com/vercel-labs/skills) above already knows the skills directory for dozens of agents, so try `npx skills add maptiler/maptiler-skills` first. Otherwise, place the `maptiler` folder (containing `SKILL.md` and `references/`) wherever that agent looks for skill definitions.
 
 <br>
 
