@@ -9,7 +9,7 @@ Built on the Agent Skills open standard, so the same skill works across Claude C
 
 ---
 
-🌐 [Website](https://www.maptiler.com/ar/) &nbsp; 🔑 [Get API Key](https://cloud.maptiler.com/account/keys/)
+🌐 [Website](https://www.maptiler.com/) &nbsp; 🔑 [Get API Key](https://cloud.maptiler.com/account/keys/)
 
 ---
 
