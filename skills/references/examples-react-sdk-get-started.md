@@ -211,7 +211,11 @@ useEffect(() => {
     zoom: zoom
   });
   
-}, [tokyo.lng, tokyo.lat, zoom]);
+  return () => {
+    map.current?.remove(); // free the WebGL context on unmount
+    map.current = null;
+  };
+}, []);
 --></code></pre>
 
 This code will be right after the component is inserted into the DOM tree. We initialize the map using React effect hook and we also set up some basic options of the map:
@@ -259,7 +263,11 @@ export default function Map() {
       zoom: zoom
     });
     
-  }, [tokyo.lng, tokyo.lat, zoom]);
+    return () => {
+      map.current?.remove(); // free the WebGL context on unmount
+      map.current = null;
+    };
+  }, []);
   
   return (
     <div className="map-wrap">
@@ -361,7 +369,12 @@ export default function Map() {
     new maptilersdk.Marker({color: "#FF0000"})
       .setLngLat([139.7525,35.6846])
       .addTo(map.current);
-  }, [tokyo.lng, tokyo.lat, zoom]);
+
+    return () => {
+      map.current?.remove(); // free the WebGL context on unmount
+      map.current = null;
+    };
+  }, []);
 
   return (
     <div className="map-wrap">
