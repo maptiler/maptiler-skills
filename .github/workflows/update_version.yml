@@ -1,0 +1,94 @@
+name: Update Library Version
+
+on:
+  repository_dispatch:
+    types: [update-version, update_version]
+  workflow_dispatch:
+    inputs:
+      library:
+        description: "Library identifier (e.g., 'sdk') or exact name (e.g., 'MapTiler SDK JS')"
+        required: true
+        type: string
+      version:
+        description: "New version string (e.g., 'v4.0.3')"
+        required: true
+        type: string
+      clean_v:
+        description: "Strip leading 'v' from version string"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Parse Inputs
+        id: vars
+        run: |
+          # Default values
+          LIBRARY=""
+          VERSION=""
+          CLEAN_V="false"
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            LIBRARY="${{ inputs.library }}"
+            VERSION="${{ inputs.version }}"
+            CLEAN_V="${{ inputs.clean_v }}"
+          else
+            # Extract values from client_payload, supporting various naming options (fallback for repository_dispatch and local act runs)
+            LIBRARY=$(echo '${{ toJson(github.event.client_payload) }}' | jq -r '.library // .library_name // .config_version_name // .identifier // ""' 2>/dev/null || echo "")
+            VERSION=$(echo '${{ toJson(github.event.client_payload) }}' | jq -r '.version // ""' 2>/dev/null || echo "")
+            CLEAN_V=$(echo '${{ toJson(github.event.client_payload) }}' | jq -r '.clean_v // .config_version_clean // "false"' 2>/dev/null || echo "false")
+          fi
+
+          # Validation
+          if [ -z "$LIBRARY" ] || [ "$LIBRARY" = "null" ]; then
+            echo "::error::Library name or identifier is missing."
+            exit 1
+          fi
+          if [ -z "$VERSION" ] || [ "$VERSION" = "null" ]; then
+            echo "::error::Version string is missing."
+            exit 1
+          fi
+
+          # Slugify library name for safe branch naming (e.g. "MapTiler SDK JS" -> "maptiler-sdk-js")
+          SAFE_LIBRARY=$(echo "$LIBRARY" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//;s/-$//')
+
+          echo "library=$LIBRARY" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "clean_v=$CLEAN_V" >> $GITHUB_OUTPUT
+          echo "safe_library=$SAFE_LIBRARY" >> $GITHUB_OUTPUT
+
+      - name: Run Update Script
+        run: |
+          if [ "${{ steps.vars.outputs.clean_v }}" = "true" ] || [ "${{ steps.vars.outputs.clean_v }}" = "1" ]; then
+            python3 .github/scripts/update_version.py --identifier "${{ steps.vars.outputs.library }}" --version "${{ steps.vars.outputs.version }}" --clean-v
+          else
+            python3 .github/scripts/update_version.py --identifier "${{ steps.vars.outputs.library }}" --version "${{ steps.vars.outputs.version }}"
+          fi
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(versions): update ${{ steps.vars.outputs.library }} to ${{ steps.vars.outputs.version }}"
+          title: "chore(versions): update ${{ steps.vars.outputs.library }} to ${{ steps.vars.outputs.version }}"
+          body: |
+            This is an automated pull request to update the reference version of `${{ steps.vars.outputs.library }}` to `${{ steps.vars.outputs.version }}` in `versions.md` and related references.
+            
+            Please review the diff, test as needed, and merge when approved.
+          branch: "automation/update-${{ steps.vars.outputs.safe_library }}"
+          delete-branch: true
