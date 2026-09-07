@@ -4,7 +4,7 @@ This file contains the current official versions of all MapTiler SDKs, libraries
 
 | Variable Name in Templates | Library Name | Version |
 | :--- | :--- | :--- |
-| `{{site.versions.sdk}}` | **MapTiler SDK JS** | `v4.0.2` |
+| `{{site.versions.sdk}}` | **MapTiler SDK JS** | `v4.1.0` |
 | `{{site.versions.client}}` | **MapTiler Client JS** | `v3.0.2` |
 | `{{site.versions.geocoding-control}}` | **Geocoding Control** | `v3.0.0` |
 | `{{site.versions.marker-layout}}` | **Marker Layout** | `v2.0.1` |
@@ -101,8 +101,8 @@ If you encounter deprecated raw strings (such as `v2` keys) in the reference fil
 - `{{site.url}}` -> `https://api.maptiler.com`
 
 ## Usage for CDN
-- **SDK JS Script:** `https://cdn.maptiler.com/maptiler-sdk-js/v4.0.2/maptiler-sdk.umd.min.js`
-- **SDK JS CSS:** `https://cdn.maptiler.com/maptiler-sdk-js/v4.0.2/maptiler-sdk.css`
+- **SDK JS Script:** `https://cdn.maptiler.com/maptiler-sdk-js/v4.1.0/maptiler-sdk.umd.min.js`
+- **SDK JS CSS:** `https://cdn.maptiler.com/maptiler-sdk-js/v4.1.0/maptiler-sdk.css`
 
 ## Usage for Gradle (Android)
 `implementation("com.maptiler:maptiler-sdk-kotlin:1.3.0")`
