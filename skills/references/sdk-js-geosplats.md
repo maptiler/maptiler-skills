@@ -106,9 +106,9 @@ if (!navigator.gpu) {
 
 ---
 
-## 5. Complete Implementation Example (CDN)
+## 5. CDN Implementation Template
 
-Below is a complete, working HTML boilerplate using the latest CDN assets:
+GeoSplat model IDs are account assets. Do not present a fake ID as runnable. This template expects the host page to define `window.MAPTILER_API_KEY` and `window.MAPTILER_SPLAT_MODEL_ID` using real, authorized values.
 
 ```html
 <!doctype html>
@@ -159,10 +159,18 @@ Below is a complete, working HTML boilerplate using the latest CDN assets:
       const errorOverlay = document.getElementById("webGpuError");
       errorOverlay.textContent = "WebGPU is not supported by your browser. Please upgrade or use a compatible browser to view the 3D GeoSplat.";
       errorOverlay.classList.remove("d-none");
+      throw new Error("WebGPU is required by MapTiler GeoSplats.");
     }
 
-    // 2. Set API Key and Initialize Map
-    config.apiKey = 'YOUR_MAPTILER_API_KEY_HERE';
+    // 2. Validate configuration before initializing WebGPU or the map
+    const apiKey = window.MAPTILER_API_KEY;
+    const modelId = window.MAPTILER_SPLAT_MODEL_ID;
+    if (!apiKey || !modelId) {
+      throw new Error(
+        "Define MAPTILER_API_KEY and MAPTILER_SPLAT_MODEL_ID with authorized values."
+      );
+    }
+    config.apiKey = apiKey;
     
     const map = new Map({
       apiKey: config.apiKey,
@@ -170,11 +178,12 @@ Below is a complete, working HTML boilerplate using the latest CDN assets:
       center: [7.86040, 46.686488], // Coordinates in [lng, lat]
       zoom: 16
     });
+    map.on("error", ({ error }) => console.error("GeoSplats map error:", error));
 
     // 3. Load Splat Model upon map load
     map.on("load", () => {
       const splatModel = new SplatModel({
-        model: "YOUR_MAPTILER_SPLAT_MODEL_ID_HERE",
+        model: modelId,
       });
       
       map.addSplatModel(splatModel);

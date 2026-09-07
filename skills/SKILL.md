@@ -94,6 +94,14 @@ Every API in the MapTiler/MapLibre family uses **`[lng, lat]`** order. The platf
 - **If a user pastes a real-looking API key** in their message (a UUID-shaped or token-shaped string near words like "key", "token", "apikey"), flag it: "you've shared what looks like a live key in plain text — rotate it at https://cloud.maptiler.com/account/keys/ when you're done testing." Use a placeholder (`YOUR_MAPTILER_API_KEY`) in your own output.
 - **Service tokens never leave the backend.** When generating example code that calls `service.maptiler.com/v1/…`, read the token from `process.env` / equivalent — never embed a placeholder that looks like a token in a public client snippet.
 - **Restrict keys by origin** in production examples. Suggest `origins: ["*.example.com"]` in the API key settings rather than unrestricted keys.
+- **Fail visibly when a key is missing.** Validate the environment/global value before constructing a map or calling an API. Throw a clear error or render a setup message; do not allow a silent blank map.
+- **Authenticate direct Cloud URLs explicitly.** Append `?key=${encodeURIComponent(apiKey)}` (or `&key=` when a query already exists) to direct `api.maptiler.com/maps/…`, `/tiles/…`, and REST URLs. Setting `config.apiKey` authenticates SDK-managed requests, but must not be assumed to rewrite arbitrary URLs passed to `addSource`, `fetch`, MapLibre, Leaflet, OpenLayers, Cesium, or native clients.
+
+### F. Runtime Resilience
+- Attach `map.on("error", handler)` and surface actionable style, tile, WebGL, and authentication failures.
+- Wrap awaited geocoding, elevation, coordinates, data, and Admin calls in `try/catch`; show a user-visible error and preserve the original error for diagnostics.
+- For dynamic sources/layers, handle style replacement: re-add them after `style.load` if `setStyle()` can occur.
+- Generate only the markup and CSS the feature uses. Do not pad examples with copied shells, unused controls, TODOs, fake package names, or placeholder asset IDs.
 
 ---
 
@@ -135,7 +143,9 @@ import '@maptiler/sdk/dist/maptiler-sdk.css';
 
 ```js
 import * as maptilersdk from '@maptiler/sdk';
-maptilersdk.config.apiKey = import.meta.env.VITE_MAPTILER_API_KEY;
+const apiKey = import.meta.env.VITE_MAPTILER_API_KEY;
+if (!apiKey) throw new Error('Missing VITE_MAPTILER_API_KEY');
+maptilersdk.config.apiKey = apiKey;
 ```
 
 ### Minimal Map
@@ -146,6 +156,11 @@ const map = new maptilersdk.Map({
   style: maptilersdk.MapStyle.STREETS,    // enum — always latest
   center: [14.4178, 50.1167],             // [lng, lat] — NOT [lat, lng]!
   zoom: 12,
+});
+
+map.on('error', ({ error }) => {
+  console.error('MapTiler map error:', error);
+  // Production apps should also render a concise error near the map.
 });
 ```
 
@@ -216,9 +231,16 @@ new maptilersdk.Marker({ color: '#FF0000' })
   .setPopup(new maptilersdk.Popup().setHTML('<h3>Prague</h3>'))
   .addTo(map);
 
-// Geocoding (forward / reverse) — features[].geometry.coordinates is [lng, lat]
-await maptilersdk.geocoding.forward('Prague', { limit: 5, proximity: [14.4178, 50.1167] });
-await maptilersdk.geocoding.reverse([14.4178, 50.1167]);
+// Geocoding — catch network/quota errors and mark the selected result
+try {
+  const result = await maptilersdk.geocoding.forward('Prague', { limit: 1 });
+  const coordinates = result.features[0]?.geometry.coordinates;
+  if (!coordinates) throw new Error('No geocoding result');
+  new maptilersdk.Marker().setLngLat(coordinates).addTo(map);
+  map.flyTo({ center: coordinates, zoom: 15 });
+} catch (error) {
+  console.error('Geocoding failed:', error); // Also show this in the UI.
+}
 
 // Camera animation
 map.flyTo({ center: [14.4178, 50.1167], zoom: 15, pitch: 60, duration: 3000 });
@@ -320,7 +342,7 @@ Use pinned versions from `versions.md` — never `latest` or obsolete builds.
 Other commonly-used pins:
 - **Leaflet plugin**: `https://cdn.maptiler.com/maptiler-leaflet-maptilersdk/v4.1.0/maptiler-leaflet-maptilersdk.js`
 - **ol-mapbox-style**: `https://cdn.jsdelivr.net/npm/ol-mapbox-style@13.4.1/dist/olms.js`
-- **CesiumJS**: `1.141.0` (script + `/Widgets/widgets.css`)
+- **CesiumJS**: `1.141.0` via **jsDelivr/unpkg** (`cdn.jsdelivr.net/npm/cesium@1.141.0/Build/Cesium/…`) — set `window.CESIUM_BASE_URL` first. Do **not** use `cesium.com/downloads/.../1.141.0` (404 / blank page).
 
 **Browser ESM**: when using `<script type="module">` or an import map, you **MUST** target the `.mjs` build (`maptiler-sdk.mjs`), not the UMD build — named ES imports from UMD trigger console errors.
 
@@ -365,17 +387,15 @@ The specialized `buildings` tileset is significantly richer than the building da
 | Unique IDs | False | **True** (z14+) — usable with `setFeatureState` |
 
 ```js
-// MapTiler SDK JS auto-injects the API key from config.apiKey — do NOT append ?key= manually.
 map.addSource('buildings', {
   type: 'vector',
-  url: 'https://api.maptiler.com/tiles/buildings/tiles.json',
+  // Direct source URLs require an explicit key, including inside SDK maps.
+  url: `https://api.maptiler.com/tiles/buildings/tiles.json?key=${encodeURIComponent(apiKey)}`,
 });
 
 // Facade color with fallback
 'fill-extrusion-color': ['coalesce', ['get', 'facade_color'], 'hsl(44, 14%, 79%)']
 ```
-
-> **Outside the SDK** (raw MapLibre GL JS, mobile native style.json fetches, server-side requests), append `?key=YOUR_MAPTILER_API_KEY` to the URL — no auto-injection happens.
 
 > **Critical field mapping**: standard uses `render_height` / `render_min_height`; specialized uses `height` / `height_min`. Mixing them causes silent rendering failures.
 
@@ -408,11 +428,15 @@ All SDK API modules use `config.apiKey` automatically. For non-JS contexts, see 
 
 ```js
 // IP geolocation
-const loc = await maptilersdk.geolocation.info();
-
-// Elevation — returns [lng, lat, elevationMeters]
-const point = await maptilersdk.elevation.at([14.4178, 50.1167]);
+try {
+  const loc = await maptilersdk.geolocation.info();
+  const point = await maptilersdk.elevation.at([14.4178, 50.1167]);
+} catch (error) {
+  console.error('MapTiler Cloud request failed:', error);
+}
 ```
+
+For elevation profiles, densify sparse routes before calling `fromLineString()` so gain, minimum, and maximum values represent the route rather than a few vertices. For Admin ingest, implement the complete backend-only flow: `POST /datasets/ingest` → upload bytes to the returned `upload_url` → `POST /datasets/ingest/{id}/process` → poll the ingest status. Keep every step executable, check every HTTP status, and use an environment-backed service token—not a browser API key. See [references/cloud-admin-api-tilesets.md](references/cloud-admin-api-tilesets.md).
 
 ---
 
@@ -472,6 +496,27 @@ fun MapScreen(context: Context) {
 
 Runnable examples: search `examples-ios-*.md`, `examples-android-*.md`. For raw style.json URL conventions (UIKit, XML/View, custom asset paths), see § 2B.
 
+### React Native — MapLibre binding
+
+MapTiler's documented React Native integration uses `@maplibre/maplibre-react-native`; do not invent a MapTiler-native package or bridge. Expo requires a development build because this package contains native code.
+
+```tsx
+import MapLibreGL from '@maplibre/maplibre-react-native';
+
+const apiKey = process.env.EXPO_PUBLIC_MAPTILER_API_KEY;
+if (!apiKey) throw new Error('Missing EXPO_PUBLIC_MAPTILER_API_KEY');
+const styleURL =
+  `https://api.maptiler.com/maps/streets-v4/style.json?key=${encodeURIComponent(apiKey)}`;
+
+<MapLibreGL.MapView style={{ flex: 1 }} styleURL={styleURL}>
+  <MapLibreGL.Camera
+    defaultSettings={{ centerCoordinate: [14.4178, 50.1167], zoomLevel: 12 }}
+  />
+</MapLibreGL.MapView>
+```
+
+For installation, Expo native builds, attribution, markers, and platform setup, read [references/mobile-sdks-react-native.md](references/mobile-sdks-react-native.md). For Flutter, read [references/mobile-sdks-flutter.md](references/mobile-sdks-flutter.md) and include `pubspec.yaml`, platform permissions, key wiring, and lifecycle handling—not only a widget sketch.
+
 ---
 
 ## 10. On-Premise — Server & Engine
@@ -498,7 +543,7 @@ For tile path conventions on fallback XYZ layers and service-worker caches, see 
 | :--- | :--- |
 | Map invisible (web) | Container needs explicit height (`100vh` or `position: absolute; inset: 0`) |
 | Markers / map center on the wrong continent | Coordinates are `[lng, lat]`, not `[lat, lng]` (e.g. Prague is `[14.4178, 50.1167]`, not `[50.1167, 14.4178]`) |
-| Layers vanish after `setStyle()` | Re-add inside `map.once('styledata', …)` |
+| Layers vanish after `setStyle()` | Re-add custom sources/layers after `style.load` |
 | Data covers labels | Use `beforeId: 'waterway-label'` |
 | Slow with many points | Enable `cluster: true` (helpers or source) |
 | SPA memory leak | Always call `map.remove()` on unmount; null the ref |
@@ -534,17 +579,24 @@ For tile path conventions on fallback XYZ layers and service-worker caches, see 
 | `@maptiler/ar` | Augmented-reality 3D terrain |
 | `@maptiler/client` | Headless API client (Node.js / browser, no map) |
 
----
-
-## 13. Resources
-
-- [MapTiler Cloud Console](https://cloud.maptiler.com/)
-- [MapTiler SDK JS Docs](https://docs.maptiler.com/sdk-js/) · [Examples](https://docs.maptiler.com/sdk-js/examples/) · [NPM](https://www.npmjs.com/package/@maptiler/sdk) · [GitHub](https://github.com/maptiler/maptiler-sdk-js)
-- [MapTiler iOS SDK Docs](https://docs.maptiler.com/mobile-sdk/ios/) · [Android SDK Docs](https://docs.maptiler.com/mobile-sdk/android/)
-- [MapLibre Style Specification](https://maplibre.org/maplibre-style-spec/)
-- Framework docs: [React](https://docs.maptiler.com/react/) · [Vue](https://docs.maptiler.com/vuejs/) · [Svelte](https://docs.maptiler.com/svelte/) · [Angular](https://docs.maptiler.com/angular/) · [Vite](https://docs.maptiler.com/vite/)
+Weather examples must do more than construct and add a layer. Include at least one user-facing capability appropriate to the request: `animateByFactor(...)`, `setAnimationTime(...)`, opacity controls, a time display, or `pickAt(lng, lat)`. Handle errors and preserve weather layers across style changes when applicable.
 
 ---
+
+## 13. Completion Checklist
+
+Before delivering code, verify:
+
+- [ ] Imports, packages, methods, source layers, and fields match the relevant reference.
+- [ ] Versions are pinned, styles are modern, coordinates are ordered correctly, and direct Cloud URLs are authenticated.
+- [ ] Missing credentials, map errors, failed HTTP responses, and rejected async calls produce actionable errors.
+- [ ] The map has dimensions; framework maps initialize once and are removed on teardown.
+- [ ] Geocoding marks its result; elevation routes are sampled usefully; weather has controls or inspection.
+- [ ] Style changes cannot permanently remove custom sources or layers.
+- [ ] Native examples include dependencies, key wiring, permissions, platform setup, and lifecycle details.
+- [ ] Admin examples execute ingest, upload, process, and status handling with a backend service token.
+- [ ] GeoSplats check WebGPU and use a user-supplied or verified public model, never a fake ID.
+- [ ] No TODOs, placeholders, commented-out required steps, unused CSS, or copied boilerplate remain.
 
 ## 14. Reference Catalog
 
