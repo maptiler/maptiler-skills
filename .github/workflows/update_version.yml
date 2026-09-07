@@ -33,7 +33,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: "3.x"
 
       - name: Parse Inputs
         id: vars
@@ -84,11 +84,11 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore(versions): update ${{ steps.vars.outputs.library }} to ${{ steps.vars.outputs.version }}"
-          title: "chore(versions): update ${{ steps.vars.outputs.library }} to ${{ steps.vars.outputs.version }}"
+          commit-message: "Versions update: ${{ steps.vars.outputs.library }} to ${{ steps.vars.outputs.version }}"
+          title: "Versions update: ${{ steps.vars.outputs.library }} to ${{ steps.vars.outputs.version }}"
           body: |
             This is an automated pull request to update the reference version of `${{ steps.vars.outputs.library }}` to `${{ steps.vars.outputs.version }}` in `versions.md` and related references.
-            
+
             Please review the diff, test as needed, and merge when approved.
           branch: "automation/update-${{ steps.vars.outputs.safe_library }}"
           delete-branch: true
