@@ -11,7 +11,7 @@ This file contains the current official versions of all MapTiler SDKs, libraries
 | `{{site.versions.elevation-profile}}` | **Elevation Profile** | `v3.0.1` |
 | `{{site.versions.leaflet-maptilersdk}}` | **Leaflet MapTiler SDK** | `v4.1.0` |
 | `{{site.versions.ar-control}}` | **AR Control** | `3.0.4` |
-| `{{site.versions.weather-js}}` | **MapTiler Weather JS** | `v3.1.1` |
+| `{{site.versions.weather-js}}` | **MapTiler Weather JS** | `v4.0.1` |
 | `{{site.versions.maptiler-3d}}` | **MapTiler 3D Plugin** | `v4.0.1` |
 | `{{site.versions.geosplats}}` | **MapTiler GeoSplats SDK** | `v1.0.4` |
 | - | **MapTiler iOS (Swift)** | `1.3.1` |
