@@ -13,7 +13,7 @@ This file contains the current official versions of all MapTiler SDKs, libraries
 | `{{site.versions.ar-control}}` | **AR Control** | `3.0.4` |
 | `{{site.versions.weather-js}}` | **MapTiler Weather JS** | `v4.0.1` |
 | `{{site.versions.maptiler-3d}}` | **MapTiler 3D Plugin** | `v4.0.1` |
-| `{{site.versions.geosplats}}` | **MapTiler GeoSplats SDK** | `v1.0.4` |
+| `{{site.versions.geosplats}}` | **MapTiler GeoSplats SDK** | `v1.2.1` |
 | - | **MapTiler iOS (Swift)** | `1.3.1` |
 | - | **MapTiler Android (Kotlin)** | `1.3.0` |
 | - | **Mapbox Android SDK** | `11.16.6` |
