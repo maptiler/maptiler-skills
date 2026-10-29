@@ -509,7 +509,7 @@ For tile path conventions on fallback XYZ layers and service-worker caches, see 
 | Mobile rendering 3D buildings looks flat | You loaded the standard style — add the specialized `buildings` source |
 | Style 404s on mobile | Update endpoint from `streets-v2` family to `streets-v4` family |
 | Geocoding key 403 | Verify referrer/whitelist in the key settings ([cloud-api-authentication.md](references/cloud-api-authentication.md)) |
-| `{{ }}` leaking into output | Resolve via [versions.md](references/versions.md) before emitting |
+| Template tag leaks `{{ }}` into output | Raw template placeholders (e.g. site.versions.sdk) appear in generated code. Resolve via [versions.md](references/versions.md) before emitting |
 | MapTiler Engine refuses to start | The `-o output_dir` (or `-o file.mbtiles`) target **must not already exist**. Delete it, or pick a new path. No `-f` / `--force` flag |
 | iOS app produces 403s on every tile | `MTConfig.shared.setAPIKey(_:)` is `async` and was called without `await` — set it inside a `Task { … }` or SwiftUI `.task` modifier *before* the first map view appears |
 | mapbox-gl-draw cursors / hit-test broken | Plugin CSS targets `.mapboxgl-canvas`; MapTiler/MapLibre uses `.maplibregl-canvas`. Add fallback rules: `.maplibregl-canvas.mouse-add { cursor: crosshair }` and `.maplibregl-canvas.mouse-drag { cursor: grabbing }` |
