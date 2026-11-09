@@ -357,7 +357,6 @@ The specialized `buildings` tileset is significantly richer than the building da
 
 | Concern | Standard (`maptiler_planet_v4`) | Specialized (`buildings`) |
 | :--- | :--- | :--- |
-| Height fields | `render_height`, `render_min_height` | `height`, `height_min` |
 | Colors | — | `facade_color`, `roof_color` |
 | Shape | — | `roof_shape` |
 | Labels | — | `building_label` (names, ISO 639 translations) |
@@ -376,8 +375,6 @@ map.addSource('buildings', {
 ```
 
 > **Outside the SDK** (raw MapLibre GL JS, mobile native style.json fetches, server-side requests), append `?key=YOUR_MAPTILER_API_KEY` to the URL — no auto-injection happens.
-
-> **Critical field mapping**: standard uses `render_height` / `render_min_height`; specialized uses `height` / `height_min`. Mixing them causes silent rendering failures.
 
 ### SDK Guardrail — `ColorRamp` Hallucination
 The JS SDK `ColorRamp` class does **NOT** contain `.getExpression()` or `.getCSSGradientDirection()`. To build a style, iterate `ColorRamp.getRawColorStops()` and construct a standard MapLibre interpolation expression manually.
