@@ -5,7 +5,7 @@ This file contains the current official versions of all MapTiler SDKs, libraries
 | Variable Name in Templates | Library Name | Version |
 | :--- | :--- | :--- |
 | `{{site.versions.sdk}}` | **MapTiler SDK JS** | `v4.2.0` |
-| `{{site.versions.client-js}}` | **MapTiler Client JS** | `v3.1.0` |
+| `{{site.versions.client-js}}` | **MapTiler Client JS** | `v3.2.0` |
 | `{{site.versions.geocoding-control}}` | **Geocoding Control** | `v3.1.0` |
 | `{{site.versions.marker-layout}}` | **Marker Layout** | `v2.0.1` |
 | `{{site.versions.elevation-profile}}` | **Elevation Profile** | `v3.0.1` |
