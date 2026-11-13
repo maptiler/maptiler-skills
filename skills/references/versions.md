@@ -4,9 +4,9 @@ This file contains the current official versions of all MapTiler SDKs, libraries
 
 | Variable Name in Templates | Library Name | Version |
 | :--- | :--- | :--- |
-| `{{site.versions.sdk}}` | **MapTiler SDK JS** | `v4.0.2` |
-| `{{site.versions.client}}` | **MapTiler Client JS** | `v3.0.2` |
-| `{{site.versions.geocoding-control}}` | **Geocoding Control** | `v3.0.0` |
+| `{{site.versions.sdk}}` | **MapTiler SDK JS** | `v4.2.0` |
+| `{{site.versions.client-js}}` | **MapTiler Client JS** | `v3.1.0` |
+| `{{site.versions.geocoding-control}}` | **Geocoding Control** | `v3.1.0` |
 | `{{site.versions.marker-layout}}` | **Marker Layout** | `v2.0.1` |
 | `{{site.versions.elevation-profile}}` | **Elevation Profile** | `v3.0.1` |
 | `{{site.versions.leaflet-maptilersdk}}` | **Leaflet MapTiler SDK** | `v4.1.0` |
@@ -14,14 +14,14 @@ This file contains the current official versions of all MapTiler SDKs, libraries
 | `{{site.versions.weather-js}}` | **MapTiler Weather JS** | `v4.0.1` |
 | `{{site.versions.maptiler-3d}}` | **MapTiler 3D Plugin** | `v4.0.1` |
 | `{{site.versions.geosplats}}` | **MapTiler GeoSplats SDK** | `v1.2.1` |
-| - | **MapTiler iOS (Swift)** | `1.3.1` |
-| - | **MapTiler Android (Kotlin)** | `1.3.0` |
+| - | **MapTiler iOS (Swift)** | `2.0.0` |
+| - | **MapTiler Android (Kotlin)** | `2.0.0` |
 | - | **Mapbox Android SDK** | `11.16.6` |
 | `{{site.versions.leaflet}}` | **Leaflet** | `1.9.4` |
-| `{{site.versions.openlayers}}` | **OpenLayers** | `10.9.0` |
-| `{{site.versions.ol-mapbox-style}}` | **ol-mapbox-style** | `13.4.1` |
-| `{{site.versions.cesium}}` | **Cesium** | `1.141.0` |
-| `{{site.versions.maplibre-gl}}` | **MapLibre GL JS** | `4.7.1` |
+| `{{site.versions.openlayers}}` | **OpenLayers** | `v10.1.0` |
+| `{{site.versions.ol-mapbox-style}}` | **ol-mapbox-style** | `12.1.1` |
+| `{{site.versions.cesium}}` | **Cesium** | `1.116.0` |
+| `{{site.versions.maplibre-gl}}` | **MapLibre GL JS** | `v5.24.0` |
 | `{{site.versions.three-js}}` | **Three.js** | `0.184.0` |
 | `{{site.versions.babylonjs}}` | **Babylon.js** | `9.9.1` |
 | `{{site.versions.bootstrap}}` | **Bootstrap** | `5.3.8` |
@@ -101,9 +101,9 @@ If you encounter deprecated raw strings (such as `v2` keys) in the reference fil
 - `{{site.url}}` -> `https://api.maptiler.com`
 
 ## Usage for CDN
-- **SDK JS Script:** `https://cdn.maptiler.com/maptiler-sdk-js/v4.0.2/maptiler-sdk.umd.min.js`
-- **SDK JS CSS:** `https://cdn.maptiler.com/maptiler-sdk-js/v4.0.2/maptiler-sdk.css`
+- **SDK JS Script:** `https://cdn.maptiler.com/maptiler-sdk-js/v4.2.0/maptiler-sdk.umd.min.js`
+- **SDK JS CSS:** `https://cdn.maptiler.com/maptiler-sdk-js/v4.2.0/maptiler-sdk.css`
 
 ## Usage for Gradle (Android)
-`implementation("com.maptiler:maptiler-sdk-kotlin:1.3.0")`
+`implementation("com.maptiler:maptiler-sdk-kotlin:2.0.0")`
 
